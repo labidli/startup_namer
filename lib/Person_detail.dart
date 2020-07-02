@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:startup_namer/Model/Person.dart';
 
 class DetailPersonPage extends StatelessWidget {
-final String name;
+final String name, lastName;
 
-  DetailPersonPage( {Key key, @required  this.name}) : super(key: key);
+  DetailPersonPage( {Key key, @required  this.name, @required  this.lastName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,8 @@ final String name;
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Text(name),
+        child: Text("Name :" + name+"  lastName :"+lastName),
+
       ),
     );
   }

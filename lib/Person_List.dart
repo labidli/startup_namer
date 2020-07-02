@@ -79,7 +79,7 @@ Widget _buildRow( Person persons,BuildContext context) {
 
         print(persons.name);
         Navigator.push(context,
-            MaterialPageRoute(builder: (context)=> DetailPersonPage(name : persons.name)
+            MaterialPageRoute(builder: (context)=> DetailPersonPage(name : persons.name, lastName:persons.lastName)
             ));
       }
   );
