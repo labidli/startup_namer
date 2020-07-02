@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
-class DetailPersonPage extends StatefulWidget {
- final int index;
+import 'package:startup_namer/Model/Person.dart';
 
- DetailPersonPage(this.index);
+class DetailPersonPage extends StatelessWidget {
+final String name;
 
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Detail of person'),
-        ),
-            body: Center(
-        child: Text(''),
-    ),
-    );
-  }
+  DetailPersonPage( {Key key, @required  this.name}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("second page  "),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text(name),
+      ),
+    );
   }
 }
