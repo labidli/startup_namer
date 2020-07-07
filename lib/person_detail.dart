@@ -16,21 +16,38 @@ DetailPersonPage( { @required  this.persons}) ;
             padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
             children: <Widget>[
               new Card(
-                child: new ListTile(
+      child: new ListBody(
 
-                  title: new Column(
+      children: <Widget>[
+                   new Row(
+
                     children: <Widget>
                     [
                       new Text(persons.surName+"    "+persons.firstName),
+                    ],
+                  ),
+                  new Row(
+
+                    children: <Widget>
+                    [
+                     new Text("sexe : "+persons.sexe),
+                    ],
+                  ),
+                  new Row(
+
+                    children: <Widget>
+                    [
+                      new Text("email :"+persons.email),
 
                     ],
                   ),
 
-                  trailing: Icon(Icons.account_circle),
-                ),
-              ),
+                  ]
 
+              ),
+              ),
             ],
+
           )
     );
   }
