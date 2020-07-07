@@ -15,7 +15,7 @@ class PersonPage extends StatefulWidget {
 class PersonState extends State<PersonPage> {
    // ignore: non_constant_identifier_names
   List<Person> listPersons = List<Person>();
-
+  final _saved = <Person>{};
   int i;
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
@@ -65,7 +65,7 @@ class PersonState extends State<PersonPage> {
 
 
 Widget _buildRow( Person persons,BuildContext context) {
-
+  final alreadySaved = _saved.contains(persons);
   var _biggerFont =const TextStyle(fontSize: 18.0);
   return Card(
     child: Padding(
@@ -74,22 +74,38 @@ Widget _buildRow( Person persons,BuildContext context) {
         //isSelected: isSelected,
       child: new ListTile(
           title: new Text( persons.firstName + "  "+ persons.surName,
+
             style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold
             ),
+
           ),
+
 
 
           subtitle: new Text(persons.sexe,
             style: TextStyle(
                 color: Colors.grey.shade600
             ),),
-          trailing:Icon(Icons.arrow_forward),
+          trailing:Icon(
+
+            alreadySaved ? Icons.account_circle : Icons.arrow_forward,
+            color: alreadySaved ? Colors.red : null,
+          ),
+
 
           onTap: () {
             Navigator.of(context).push<void>(_createRoute(persons));
 
+            setState(() {
+              if (alreadySaved) {
+                _saved.remove(persons);
+              } else {
+                _saved.add(persons);
+              }
+            });
+          }
 
       ),
     ),

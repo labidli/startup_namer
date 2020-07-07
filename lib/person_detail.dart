@@ -11,11 +11,29 @@ DetailPersonPage( { @required  this.persons}) ;
       appBar: AppBar(
         title: Text("Detail persons "),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text("Name :" + persons.surName+"  lastName :"+persons.firstName),
+      body: new ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+            children: <Widget>[
+              new Card(
+                child: new ListTile(
 
-      ),
+                  title: new Column(
+                    children: <Widget>
+                    [
+                      new Text(persons.surName+"    "+persons.firstName),
+
+                    ],
+                  ),
+
+                  trailing: Icon(Icons.account_circle),
+                ),
+              ),
+
+            ],
+          )
     );
   }
+
+
 }
