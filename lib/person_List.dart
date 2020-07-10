@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -13,59 +15,72 @@ class PersonPage extends StatefulWidget {
   PersonState createState() => new PersonState();
 }
 class PersonState extends State<PersonPage> {
-   // ignore: non_constant_identifier_names
-  List<Person> listPersons = List<Person>();
+  StreamController<Person> streamController;
+  Future <List<Person>> futureListPersons;
+  List<Person> listPersons ;
   final _saved = <Person>{};
   int i;
-  final _biggerFont = const TextStyle(fontSize: 18.0);
 
   @override
   void initState() {
+    //streamController = StreamController();
+    //streamController.stream.listen((p) => setState(() =>  _fetchPersonsList()));
     _fetchPersonsList().then((value) {
       setState(() {
         listPersons.addAll(value);
       });
     });
-    super.initState();
 
+    futureListPersons=_fetchPersonsList();
+    super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: new Text("List of Person"),
+                ),
+      body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            child: Center(
+              child: StreamBuilder<List<Person>>(
+                stream: futureListPersons.asStream(),
+                initialData:  listPersons,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
 
-    Widget widget;
+                    return ListView.builder(
+                    shrinkWrap: true,
+
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, i) {
+                      listPersons =snapshot.data;
+                      return _buildRow( listPersons, context);
+                     },
+                    );
 
 
-      //TODO: search how to stop ListView going infinite list
-      widget =  new ListView.builder(
-          shrinkWrap:true,
-
-        itemCount: listPersons.length,
-          itemBuilder: (context, i) {
-
-
-
-            return _buildRow(listPersons[i],context);
-
-
-
-          },
-
+                  } else {return CircularProgressIndicator();}
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
 
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("List of Person"),
-      ),
-      body: widget,
-    );
   }
 
-
-
-Widget _buildRow( Person persons,BuildContext context) {
-  final alreadySaved = _saved.contains(persons);
+Widget _buildRow( listPersons,BuildContext context) {
+  final alreadySaved = _saved.contains(listPersons);
   var _biggerFont =const TextStyle(fontSize: 18.0);
   return Card(
     child: Padding(
@@ -73,45 +88,76 @@ Widget _buildRow( Person persons,BuildContext context) {
 
         //isSelected: isSelected,
       child: new ListTile(
-          title: new Text( persons.firstName + "  "+ persons.surName,
+          title: new Text( listPersons[i].firstName + "  "+ listPersons[i].surName,
 
             style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold
             ),
-
           ),
 
-
-
-          subtitle: new Text(persons.sexe,
+          subtitle: new Text(listPersons[i].email,
             style: TextStyle(
                 color: Colors.grey.shade600
             ),),
           trailing:Icon(
-
             alreadySaved ? Icons.account_circle : Icons.arrow_forward,
             color: alreadySaved ? Colors.red : null,
           ),
 
-
           onTap: () {
-            Navigator.of(context).push<void>(_createRoute(persons));
+            Navigator.of(context).push<void>(_createRoute(listPersons));
 
             setState(() {
               if (alreadySaved) {
-                _saved.remove(persons);
+                _saved.remove(listPersons);
               } else {
-                _saved.add(persons);
+                _saved.add(listPersons);
               }
             });
           }
-
       ),
     ),
   );
-
 }
+
+// ouvrir une fichier json
+  Future<String> _loadAPersonAsset() async {
+
+    return await rootBundle.loadString('assets/generated.json');
+  }
+Future<List<Person>> _fetchPersonsList( ) async {
+
+  //var _listPersons =List<Person>();
+
+    String jsonString =await _loadAPersonAsset();
+    final jsonResponses = json.decode(jsonString);
+    if (jsonResponses.statusCode == 200) {
+
+      for (var jsonResponse in jsonResponses) {
+        return jsonResponse.map((job) => new Person.fromJson(jsonResponse)).toList();
+       //_listPersons.add(new Person.fromJson(jsonResponse));
+      }
+  //
+
+
+      //return  _listPersons  ;
+
+    }else {
+      return Future.error("error d importation des données json");
+   }
+
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    streamController?.close();
+    streamController = null;
+  }
+
+//animation  et navigation vers Page detail person
   Route _createRoute(Person persons) {
     return PageRouteBuilder<SlideTransition>(
       pageBuilder: (context, animation, secondaryAnimation) => DetailPersonPage(persons: persons),
@@ -127,23 +173,7 @@ Widget _buildRow( Person persons,BuildContext context) {
     );
   }
 
-  Future<String> _loadAPersonAsset() async {
 
-    return await rootBundle.loadString('assets/generated.json');
-  }
-  Future<List<Person >> _fetchPersonsList() async {
-
-    List<Person> _listPersons = List<Person>();
-
-
-    String jsonString = await _loadAPersonAsset();
-    final jsonResponses = json.decode(jsonString);
-    for (var jsonResponse in jsonResponses) {
-      _listPersons.add(new Person.fromJson(jsonResponse));
-    }
-
-return _listPersons;
-  }
 
 }
 
